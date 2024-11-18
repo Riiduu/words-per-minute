@@ -73,7 +73,7 @@ function App() {
     }
   }
 
-  const paragraph = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam similique, cum officia, dolorem quidem cumque excepturi commodi sequi assumenda inventore quae tempore officiis odio odit eligendi dolore illo quos exercitationem?";
+  const paragraph = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quae cum ita sint, effectum est nihil esse malum, quod turpe non sit. At certe gravius. Sunt enim prima elementa naturae, quibus auctis vírtutis quasi germen efficitur. Cur ipse Pythagoras et Aegyptum lustravit et Persarum magos adiit? At iam decimum annum in spelunca iacet. Duo Reges: constructio interrete. Ergo hoc quidem apparet, nos ad agendum esse natos. Quibus ego vehementer assentior.";
 
 
   // Timer Logic
@@ -103,8 +103,8 @@ function App() {
         <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
         <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
       </div>
-      <div className="text-gray-500 text-2xl">
-        <p>
+      <div className="text-gray-500 text-2xl h-32 flex items-center  ">
+        <p className="">
           {/* Insert the paragraphText as Characters surrounded by spans */}
           {
             paragraph.split("").map((char, index) => {
