@@ -6,12 +6,14 @@ function App() {
     document.addEventListener("keydown", detectKeyDown, true)
   }, [])
 
+  // Timer value
   const [time, setTime] = useState(60);
 
+  // Starts and ends the game
   const [startGame, setStartGame] = useState(false);
 
+  // Ref for paragraph styling
   const charRefs = useRef([]);
-
   const specialKeys = [
     "Shift",
     "Control",
@@ -94,11 +96,8 @@ function App() {
     }
   }, [startGame]); // Runs only when `startGame` changes
 
-
-
-
   return (
-    <div className="bg-gray-800 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
+    <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
       <div>
         <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
         <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
@@ -120,7 +119,7 @@ function App() {
         </p>
       </div>
 
-      <h1 className="text-2xl font-bold">Time: <span className={time <= 10 ? "text-red-500" : ""}>{time}</span></h1>
+      <h1 className="text-2xl font-bold">Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span></h1>
     </div>
   )
 }
