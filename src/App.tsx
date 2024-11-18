@@ -6,6 +6,10 @@ function App() {
     document.addEventListener("keydown", detectKeyDown, true)
   }, [])
 
+  const [time, setTime] = useState(60);
+
+  const [startGame, setStartGame] = useState(false);
+
   const charRefs = useRef([]);
 
   const specialKeys = [
@@ -64,14 +68,34 @@ function App() {
       position++
     }
 
-    console.log(position)
-
+    if (position == 1) {
+      setStartGame(true);
+    }
   }
-
 
   const paragraph = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam similique, cum officia, dolorem quidem cumque excepturi commodi sequi assumenda inventore quae tempore officiis odio odit eligendi dolore illo quos exercitationem?";
 
-  let time = 20;
+
+  // Timer Logic
+  useEffect(() => {
+    if (startGame) {
+      const timer = setInterval(() => {
+        setTime((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setStartGame(false); // Stop the game when time runs out
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup
+    }
+  }, [startGame]); // Runs only when `startGame` changes
+
+
+
 
   return (
     <div className="bg-gray-800 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
@@ -96,7 +120,7 @@ function App() {
         </p>
       </div>
 
-      <h1 className="text-2xl font-bold">Time: {time}</h1>
+      <h1 className="text-2xl font-bold">Time: <span className={time <= 10 ? "text-red-500" : ""}>{time}</span></h1>
     </div>
   )
 }
