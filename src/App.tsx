@@ -8,12 +8,68 @@ function App() {
 
   const charRefs = useRef([]);
 
+  const specialKeys = [
+    "Shift",
+    "Control",
+    "Alt",
+    "Meta",          // Windows key (or Command key on macOS)
+    "Tab",
+    "CapsLock",
+    "Escape",
+    "Enter",
+    "Space",         // Represented as " " in `e.key`
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "Insert",
+    "Delete",
+    "Home",
+    "End",
+    "PageUp",
+    "PageDown",
+    "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",  // Function keys
+    "NumLock",
+    "PrintScreen",
+    "Pause",
+    "ScrollLock",
+    "ContextMenu"   // Right-click context menu key
+  ];
+
+  let position = 0;
+  // track the click count and the paragraph position according to the clicks
   const detectKeyDown = (e: any) => {
-    console.log("Clicked: " + e.key)
+
+    for (let i = 0; i < specialKeys.length; i++) {
+      if (e.key === specialKeys[i]) {
+        return;
+      }
+    }
+
+    if (position < 0) {
+      position = 0;
+      return;
+    }
+
+    if (e.key === "Backspace") {
+      position--;
+      charRefs.current[position].className = "";
+    }
+
+    if (e.key == paragraph[position]) {
+      charRefs.current[position].className = "text-white";
+      position++;
+    } else if (e.key != paragraph[position] && e.key != "Backspace") {
+      charRefs.current[position].className = "text-red-500 underline";
+      position++
+    }
+
+    console.log(position)
+
   }
 
 
-  const [paragraph, setParagraph] = useState("Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam similique, cum officia, dolorem quidem cumque excepturi commodi sequi assumenda inventore quae tempore officiis odio odit eligendi dolore illo quos exercitationem?");
+  const paragraph = "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam similique, cum officia, dolorem quidem cumque excepturi commodi sequi assumenda inventore quae tempore officiis odio odit eligendi dolore illo quos exercitationem?";
 
   let time = 20;
 
