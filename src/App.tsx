@@ -5,7 +5,7 @@ function App() {
   const [time, setTime] = useState(60);
   const [text, setText] = useState("");
   const [startGame, setStartGame] = useState(false);
-  const [endGame, setEndGame] = useState(false);
+  const [endGame, setEndGame] = useState(true);
 
   const charRefs = useRef([]);
   const position = useRef(0);
@@ -73,26 +73,42 @@ function App() {
   }, [startGame]);
 
   return (
-    <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
-      <div>
-        <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
-        <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
-      </div>
-      <div className="text-gray-500 text-2xl h-32 flex items-center">
-        <p>
-          {text
-            ? text.split("").map((char, index) => (
-              <span key={index} ref={(el) => (charRefs.current[index] = el)}>
-                {char}
-              </span>
-            ))
-            : "Loading..."}
-        </p>
-      </div>
-      <h1 className="text-2xl font-bold">
-        Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span>
-      </h1>
-    </div>
+    <>
+      {
+        endGame
+          ?
+          <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-center space-y-10">
+            <h1 className="text-4xl font-bold">Results</h1>
+            <div className="border-b-white border-2 w-96"></div>
+            <h1 className="text-3xl">You write: <span className="underline font-bold">57 words</span> per minute</h1>
+            <div className="border-b-white border-2 w-96"></div>
+            <button onClick={() => setEndGame(false)} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
+          </div>
+          :
+          <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
+            <div>
+              <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
+              <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
+            </div>
+            <div className="text-gray-500 text-2xl h-32 flex items-center">
+              <p>
+                {text
+                  ? text.split("").map((char, index) => (
+                    <span key={index} ref={(el) => (charRefs.current[index] = el)}>
+                      {char}
+                    </span>
+                  ))
+                  : "Loading..."}
+              </p>
+            </div>
+            <h1 className="text-2xl font-bold">
+              Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span>
+            </h1>
+          </div>
+      }
+
+    </>
+
   );
 }
 
