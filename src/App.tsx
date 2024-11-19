@@ -1,100 +1,76 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { randomText } from "./api/textGenerator";
 
 function App() {
+  const [time, setTime] = useState(5);
+  const [text, setText] = useState("");
+  const [startGame, setStartGame] = useState(false);
+  const [endGame, setEndGame] = useState(false);
+
+  const charRefs = useRef([]);
+  const position = useRef(0);
 
   useEffect(() => {
-    document.addEventListener("keydown", detectKeyDown, true)
-  }, [])
+    const setup = async () => {
+      const generatedText = await randomText();
+      setText(generatedText);
+    };
+    setup();
+  }, []);
 
-  // Timer value
-  const [time, setTime] = useState(60);
-
-  // Starts and ends the game
-  const [startGame, setStartGame] = useState(false);
-
-  // Ref for paragraph styling
-  const charRefs = useRef([]);
   const specialKeys = [
-    "Shift",
-    "Control",
-    "Alt",
-    "Meta",          // Windows key (or Command key on macOS)
-    "Tab",
-    "CapsLock",
-    "Escape",
-    "Enter",
-    "Space",         // Represented as " " in `e.key`
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-    "Insert",
-    "Delete",
-    "Home",
-    "End",
-    "PageUp",
-    "PageDown",
-    "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",  // Function keys
-    "NumLock",
-    "PrintScreen",
-    "Pause",
-    "ScrollLock",
-    "ContextMenu"   // Right-click context menu key
+    "Shift", "Control", "Alt", "Meta", "Tab", "CapsLock", "Escape", "Enter", "Space",
+    "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Insert", "Delete", "Home",
+    "End", "PageUp", "PageDown", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+    "F9", "F10", "F11", "F12", "NumLock", "PrintScreen", "Pause", "ScrollLock", "ContextMenu"
   ];
 
-  let position = 0;
-  // track the click count and the paragraph position according to the clicks
-  const detectKeyDown = (e: any) => {
+  const detectKeyDown = useCallback((e: any) => {
+    if (!text || endGame) return; // Skip if text is not loaded
 
-    for (let i = 0; i < specialKeys.length; i++) {
-      if (e.key === specialKeys[i]) {
-        return;
-      }
-    }
-
-    if (position < 0) {
-      position = 0;
-      return;
-    }
+    if (specialKeys.includes(e.key)) return;
 
     if (e.key === "Backspace") {
-      position--;
-      charRefs.current[position].className = "";
+      position.current = Math.max(0, position.current - 1);
+      charRefs.current[position.current]?.classList.remove("text-white", "text-red-500", "underline");
+    } else if (e.key === text[position.current]) {
+      charRefs.current[position.current]?.classList.add("text-white");
+      position.current++;
+    } else {
+      charRefs.current[position.current]?.classList.add("text-red-500", "underline");
+      position.current++;
     }
 
-    if (e.key == paragraph[position]) {
-      charRefs.current[position].className = "text-white";
-      position++;
-    } else if (e.key != paragraph[position] && e.key != "Backspace") {
-      charRefs.current[position].className = "text-red-500 underline";
-      position++
+    if (position.current === 1) setStartGame(true);
+  }, [text]);
+
+  useEffect(() => {
+    if (!endGame) {
+      document.addEventListener("keydown", detectKeyDown);
     }
 
-    if (position == 1) {
-      setStartGame(true);
-    }
-  }
+    return () => {
+      document.removeEventListener("keydown", detectKeyDown);
+    };
+  }, [detectKeyDown, endGame]);
 
-  const paragraph = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quae cum ita sint, effectum est nihil esse malum, quod turpe non sit. At certe gravius. Sunt enim prima elementa naturae, quibus auctis vírtutis quasi germen efficitur. Cur ipse Pythagoras et Aegyptum lustravit et Persarum magos adiit? At iam decimum annum in spelunca iacet. Duo Reges: constructio interrete. Ergo hoc quidem apparet, nos ad agendum esse natos. Quibus ego vehementer assentior.";
-
-
-  // Timer Logic
   useEffect(() => {
     if (startGame) {
       const timer = setInterval(() => {
-        setTime((prevTime) => {
-          if (prevTime <= 1) {
+        setTime((prev) => {
+          if (prev <= 1) {
             clearInterval(timer);
-            setStartGame(false); // Stop the game when time runs out
+            setStartGame(false);
+            setEndGame(true);
             return 0;
           }
-          return prevTime - 1;
+          return prev - 1;
         });
       }, 1000);
 
-      return () => clearInterval(timer); // Cleanup
+      return () => clearInterval(timer);
     }
-  }, [startGame]); // Runs only when `startGame` changes
+  }, [startGame]);
 
   return (
     <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
@@ -102,26 +78,22 @@ function App() {
         <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
         <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
       </div>
-      <div className="text-gray-500 text-2xl h-32 flex items-center  ">
-        <p className="">
-          {/* Insert the paragraphText as Characters surrounded by spans */}
-          {
-            paragraph.split("").map((char, index) => {
-              return <span
-                key={index}
-                className=""
-                ref={(el) => (charRefs.current[index] = el)}
-              >
+      <div className="text-gray-500 text-2xl h-32 flex items-center">
+        <p>
+          {text
+            ? text.split("").map((char, index) => (
+              <span key={index} ref={(el) => (charRefs.current[index] = el)}>
                 {char}
               </span>
-            })
-          }
+            ))
+            : "Loading..."}
         </p>
       </div>
-
-      <h1 className="text-2xl font-bold">Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span></h1>
+      <h1 className="text-2xl font-bold">
+        Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span>
+      </h1>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
