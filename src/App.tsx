@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "./api/textGenerator";
 
 function App() {
-  const [time, setTime] = useState(60);
+  const [time, setTime] = useState(2);
   const [text, setText] = useState("");
   const [startGame, setStartGame] = useState(false);
-  const [endGame, setEndGame] = useState(true);
+  const [endGame, setEndGame] = useState(false);
+  const [wordsPerMin, setWordsPerMin] = useState(0);
 
   const charRefs = useRef([]);
   const position = useRef(0);
@@ -54,14 +55,31 @@ function App() {
     };
   }, [detectKeyDown, endGame]);
 
+  // Calculate the words per minute
+  const calculateWordsPerMin = () => {
+
+  }
+
+  const runCleanup = () => {
+    setStartGame(false);
+    calculateWordsPerMin();
+    setEndGame(true);
+  }
+
+  const tryAgain = () => {
+    setStartGame(true);
+    setEndGame(false);
+    setTime(60)
+    position.current = 0;
+  }
+
   useEffect(() => {
     if (startGame) {
       const timer = setInterval(() => {
         setTime((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            setStartGame(false);
-            setEndGame(true);
+            runCleanup();
             return 0;
           }
           return prev - 1;
@@ -80,9 +98,9 @@ function App() {
           <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-center space-y-10">
             <h1 className="text-4xl font-bold">Results</h1>
             <div className="border-b-white border-2 w-96"></div>
-            <h1 className="text-3xl">You write: <span className="underline font-bold">57 words</span> per minute</h1>
+            <h1 className="text-3xl">You write: <span className="underline font-bold">{wordsPerMin} words</span> per minute</h1>
             <div className="border-b-white border-2 w-96"></div>
-            <button onClick={() => setEndGame(false)} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
+            <button onClick={() => tryAgain()} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
           </div>
           :
           <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
