@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "./api/textGenerator";
 
 function App() {
-  const [time, setTime] = useState(10);
+  const [time, setTime] = useState(60);
   const [text, setText] = useState("");
   const [startGame, setStartGame] = useState(false);
   const [endGame, setEndGame] = useState(false);
@@ -65,7 +65,7 @@ function App() {
     // split the text into separate words and save it as a number
     let split = temp.split(" ");
     // divide the number with 60 and set it to the wordspermin var
-    setWordsPerMin(split.length / 60)
+    setWordsPerMin(Math.round(split.length / 60))
   }
 
   // Run this after a finished game, but before you show results
@@ -115,25 +115,27 @@ function App() {
             <button onClick={() => tryAgain()} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
           </div>
           :
-          <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-between">
-            <div>
-              <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
-              <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
+          <div className="bg-gray-900 h-screen w-screen flex justify-center">
+            <div className=" items-center text-white flex flex-col justify-between h-screen max-w-6xl px-10 py-32">
+              <div>
+                <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
+                <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
+              </div>
+              <div className="text-gray-500 text-2xl h-32 flex items-center">
+                <p>
+                  {text
+                    ? text.split("").map((char, index) => (
+                      <span key={index} ref={(el) => (charRefs.current[index] = el)}>
+                        {char}
+                      </span>
+                    ))
+                    : "Loading..."}
+                </p>
+              </div>
+              <h1 className="text-2xl font-bold">
+                Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span>
+              </h1>
             </div>
-            <div className="text-gray-500 text-2xl h-32 flex items-center">
-              <p>
-                {text
-                  ? text.split("").map((char, index) => (
-                    <span key={index} ref={(el) => (charRefs.current[index] = el)}>
-                      {char}
-                    </span>
-                  ))
-                  : "Loading..."}
-              </p>
-            </div>
-            <h1 className="text-2xl font-bold">
-              Time: <span className={time <= 10 ? "text-red-500 font-bold" : "font-bold"}>{time}</span>
-            </h1>
           </div>
       }
 
