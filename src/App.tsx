@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "./api/textGenerator";
 
 function App() {
-  const [time, setTime] = useState(2);
+  const [time, setTime] = useState(10);
   const [text, setText] = useState("");
   const [startGame, setStartGame] = useState(false);
   const [endGame, setEndGame] = useState(false);
@@ -11,11 +11,12 @@ function App() {
   const charRefs = useRef([]);
   const position = useRef(0);
 
+  const setup = async () => {
+    const generatedText = await randomText();
+    setText(generatedText);
+  };
+
   useEffect(() => {
-    const setup = async () => {
-      const generatedText = await randomText();
-      setText(generatedText);
-    };
     setup();
   }, []);
 
@@ -57,22 +58,33 @@ function App() {
 
   // Calculate the words per minute
   const calculateWordsPerMin = () => {
+    let paragraph = text;
 
+    // take the paragraph until the current position
+    let temp = paragraph.slice(0, position.current)
+    // split the text into separate words and save it as a number
+    let split = temp.split(" ");
+    // divide the number with 60 and set it to the wordspermin var
+    setWordsPerMin(split.length / 60)
   }
 
+  // Run this after a finished game, but before you show results
   const runCleanup = () => {
-    setStartGame(false);
     calculateWordsPerMin();
+    setStartGame(false);
     setEndGame(true);
+    setText("");
   }
 
+  // Pretty self explanatory, I think
   const tryAgain = () => {
-    setStartGame(true);
     setEndGame(false);
     setTime(60)
+    setup();
     position.current = 0;
   }
 
+  // Timer functionality
   useEffect(() => {
     if (startGame) {
       const timer = setInterval(() => {
