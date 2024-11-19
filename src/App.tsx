@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "./api/textGenerator";
 
 function App() {
-  const [time, setTime] = useState(5);
+  const [time, setTime] = useState(60);
   const [text, setText] = useState("");
   const [startGame, setStartGame] = useState(false);
   const [endGame, setEndGame] = useState(false);
