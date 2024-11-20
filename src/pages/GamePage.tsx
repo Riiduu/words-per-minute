@@ -2,6 +2,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "../api/textGenerator";
 import { useNavigate } from "react-router-dom";
 
+import { db } from "../../firebase.ts";
+
+import { collection, addDoc } from "firebase/firestore";
+
+
 function GamePage() {
     const [time, setTime] = useState(10);
     const [text, setText] = useState("");
@@ -11,6 +16,7 @@ function GamePage() {
 
     const charRefs = useRef([]);
     const position = useRef(0);
+    const leaderboardInputRef = useRef<HTMLInputElement>()
 
     // Navigation
     const navigate = useNavigate();
@@ -69,7 +75,7 @@ function GamePage() {
         // split the text into separate words and save it as a number
         let split = temp.split(" ");
         // divide the number with 60 and set it to the wordspermin var
-        setWordsPerMin(Math.round(split.length / 60))
+        setWordsPerMin(Math.round(split.length / time))
     }
 
     // Run this after a finished game, but before you show results
@@ -86,6 +92,15 @@ function GamePage() {
         setTime(60)
         setup();
         position.current = 0;
+    }
+
+    const addToLeaderboard = async () => {
+        if (leaderboardInputRef?.current) {
+            const docRef = await addDoc(collection(db, "leaderboards"), {
+                username: leaderboardInputRef.current.value,
+                score: wordsPerMin
+            });
+        }
     }
 
     // Timer functionality
@@ -120,6 +135,15 @@ function GamePage() {
                         <h1 className="text-3xl">You write: <span className="underline font-bold">{wordsPerMin} words</span> per minute</h1>
                         <div className="border-b-white border-2 w-96"></div>
                         <button onClick={() => tryAgain()} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
+                        <div className="flex flex-col text-center">
+                            <h1 className="text-xl">Enter Leaderboard?</h1>
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                addToLeaderboard();
+                            }}>
+                                <input ref={leaderboardInputRef} className="m-2 p-2 rounded-xl outline-none text-black text-center" type="text" />
+                            </form>
+                        </div>
                     </div>
                     :
                     <div className="bg-gray-900 h-screen w-screen flex flex-col justify-center relative">
@@ -140,7 +164,8 @@ function GamePage() {
                                                 {char}
                                             </span>
                                         ))
-                                        : "Loading..."}
+                                        : "Loading..."
+                                    }
                                 </p>
                             </div>
                             <h1 className="text-2xl font-bold">
