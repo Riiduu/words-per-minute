@@ -146,7 +146,7 @@ function GamePage() {
                         </div>
                     </div>
                     :
-                    <div className="bg-gray-900 h-screen w-screen flex flex-col justify-center relative">
+                    <div className="bg-gray-900 h-screen w-screen flex items-center flex-col justify-center relative">
                         {/* Leaderboards button */}
                         <div className="w-screen h-10 flex text-center justify-center items-center bg-yellow-300 cursor-pointer absolute top-0">
                             <h1 className="m-auto hover:underline cursor-pointer" onClick={() => navigate('/leaderboards')}>Check out the leaderboards🏆</h1>
