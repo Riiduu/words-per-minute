@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { randomText } from "../api/textGenerator";
+import { useNavigate } from "react-router-dom";
 
 function GamePage() {
-    const [time, setTime] = useState(60);
+    const [time, setTime] = useState(10);
     const [text, setText] = useState("");
     const [startGame, setStartGame] = useState(false);
     const [endGame, setEndGame] = useState(false);
@@ -10,6 +11,9 @@ function GamePage() {
 
     const charRefs = useRef([]);
     const position = useRef(0);
+
+    // Navigation
+    const navigate = useNavigate();
 
     const setup = async () => {
         const generatedText = await randomText();
@@ -107,7 +111,10 @@ function GamePage() {
             {
                 endGame
                     ?
-                    <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-center space-y-10">
+                    <div className="bg-gray-900 h-screen w-screen px-10 py-32 items-center text-white flex flex-col justify-center space-y-10 relative">
+                        <div className="w-screen absolute h-10 flex text-center justify-center items-center bg-yellow-300 cursor-pointer top-0">
+                            <h1 className="m-auto hover:underline cursor-pointer" onClick={() => navigate('/leaderboards')}>Check out the leaderboards🏆</h1>
+                        </div>
                         <h1 className="text-4xl font-bold">Results</h1>
                         <div className="border-b-white border-2 w-96"></div>
                         <h1 className="text-3xl">You write: <span className="underline font-bold">{wordsPerMin} words</span> per minute</h1>
@@ -115,8 +122,12 @@ function GamePage() {
                         <button onClick={() => tryAgain()} className="border-white border-2 px-5 py-2 rounded-2xl bg-gray-600 hover:bg-gray-700">Try Again?</button>
                     </div>
                     :
-                    <div className="bg-gray-900 h-screen w-screen flex justify-center">
-                        <div className=" items-center text-white flex flex-col justify-between h-screen max-w-6xl px-10 py-32">
+                    <div className="bg-gray-900 h-screen w-screen flex flex-col justify-center relative">
+                        {/* Leaderboards button */}
+                        <div className="w-screen h-10 flex text-center justify-center items-center bg-yellow-300 cursor-pointer absolute top-0">
+                            <h1 className="m-auto hover:underline cursor-pointer" onClick={() => navigate('/leaderboards')}>Check out the leaderboards🏆</h1>
+                        </div>
+                        <div className=" items-center text-white flex flex-col justify-between h-screen max-w-6xl px-10 py-20">
                             <div>
                                 <h1 className="text-center text-4xl font-bold">Words Per Minute Game</h1>
                                 <p className="text-center text-md text-gray-300 mt-3">Start typing to begin the game</p>
